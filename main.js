@@ -11,10 +11,6 @@ class Tree {
     this.root = null;
   }
 
-  log() {
-    console.log(this.arr);
-  }
-
   buildTree(arr) {
     this.root = this.buildBalancedTree(arr, 0, arr.length - 1);
   }
@@ -56,6 +52,75 @@ class Tree {
       } else {
         return;
       }
+    }
+  }
+
+  deleteItem(value) {
+    this.root = this.deleteNode(this.root, value);
+  }
+
+  deleteNode(node, value) {
+    if (node === null) {
+      return null;
+    }
+    if (value < node.data) {
+      node.left = this.deleteNode(node.left, value);
+    } else if (value > node.data) {
+      node.right = this.deleteNode(node.right, value);
+    } else {
+      if (node.left === null) {
+        return node.right;
+      } else if (node.right === null) {
+        return node.left;
+      }
+      node.data = this.minValue(node.right);
+      node.right = this.deleteNode(node.right, node.data);
+    }
+    return node;
+  }
+
+  minValue(node) {
+    let minv = node.data;
+    while (node.left !== null) {
+      minv = node.left.data;
+      node = node.left;
+    }
+    return minv;
+  }
+
+  find(value) {
+    let current = this.root;
+    while (current) {
+      if (value < current.data) {
+        current = current.left;
+      } else if (value > current.data) {
+        current = current.right;
+      } else {
+        return current;
+      }
+    }
+  }
+
+  levelOrder(callback) {
+    const queue = [];
+    const visited = [];
+    queue.push(this.root);
+
+    while (queue.length) {
+      const node = queue.shift();
+      visited.push(node.data);
+
+      if (node.left !== null) {
+        queue.push(node.left);
+      }
+      if (node.right !== null) {
+        queue.push(node.right);
+      }
+    }
+    if (typeof callback === 'function') {
+      visited.forEach((item) => callback(item));
+    } else {
+      return visited;
     }
   }
 }
@@ -157,3 +222,4 @@ const arr = mergeSort([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 tree.buildTree(arr);
 
 prettyPrint(tree.root);
+// console.log(tree.levelOrder());
