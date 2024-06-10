@@ -16,12 +16,19 @@ class Tree {
   }
 
   buildTree(arr) {
-    arr = mergeSort(arr);
-    // this.root = new Node(arr[arr.length / 2]);
-    for (let i = 0; i < arr.length; i++) {
-      this.insert(arr[i]);
-    }
-    return this.root;
+    this.root = this.buildBalancedTree(arr, 0, arr.length - 1);
+  }
+
+  buildBalancedTree(arr, start, end) {
+    if (start > end) return null;
+
+    const mid = Math.round((start + end) / 2);
+    const newNode = new Node(arr[mid]);
+
+    newNode.left = this.buildBalancedTree(arr, start, mid - 1);
+    newNode.right = this.buildBalancedTree(arr, mid + 1, end);
+
+    return newNode;
   }
 
   insert(value) {
@@ -92,9 +99,6 @@ function merge(left, right) {
   return result;
 }
 
-const tree = new Tree();
-const root = tree.buildTree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-
 const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) {
     return;
@@ -107,8 +111,6 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
 };
-
-prettyPrint(root);
 
 function bfs(root) {
   if (root === null) return;
@@ -150,4 +152,8 @@ function traverse(node, arr) {
   }
 }
 
-console.log(dfs(root));
+const tree = new Tree();
+const arr = mergeSort([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
+tree.buildTree(arr);
+
+prettyPrint(tree.root);
